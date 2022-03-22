@@ -9,6 +9,6 @@
 
 # Slides:
 
-- Session 1: Introduction to Hedera ()
-- Session 2: Smart Contracts on Hedera ()
-- Session 3: Wrap Up ()
+- [Session 1: Introduction to Hedera](https://github.com/ed-marquez/hedera-dapp-days/blob/start/slides/Session%201%20-%20Introduction%20to%20Hedera.pdf)
+- [Session 2: Smart Contracts on Hedera](https://github.com/ed-marquez/hedera-dapp-days/blob/start/slides/Session%202%20-%20Smart%20Contracts%20on%20Hedera.pdf)
+- [Session 3: Wrap Up](https://github.com/ed-marquez/hedera-dapp-days/blob/start/slides/Session%203%20-%20Wrap%20Up.pdf)
