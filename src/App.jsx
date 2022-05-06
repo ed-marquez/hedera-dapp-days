@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import MyGroup from "./components/MyGroup.jsx";
+import walletConnectFcn from "./components/hedera/walletConnect.js";
 import tokenCreateFcn from "./components/hedera/tokenCreate.js";
 import tokenMintFcn from "./components/hedera/tokenMint.js";
 import contractDeployFcn from "./components/hedera/contractDeploy.js";
@@ -7,6 +8,7 @@ import contractTokenTransferFcn from "./components/hedera/contractTokenTransfer.
 import "./styles/App.css";
 
 function App() {
+	const [walletData, setWalletData] = useState();
 	const [tokenId, setTokenId] = useState();
 	const [tokenSupply, setTokenSupply] = useState();
 	const [contractId, setContractId] = useState();
@@ -16,11 +18,20 @@ function App() {
 	const [contractTextSt, setContractTextSt] = useState();
 	const [trasnferTextSt, setTransferTextSt] = useState();
 
+	async function connectWallet() {
+		const wData = await walletConnectFcn();
+		setWalletData(wData);
+	}
+
 	async function tokenCreate() {
 		if (tokenId !== undefined) {
 			setCreateTextSt(`You already have token ${tokenId}`);
 		} else {
-			const [tId, supply] = await tokenCreateFcn();
+			console.log(`Running token create`);
+			console.log(`${walletData[0]}`);
+			console.log(`account: ${walletData[1]}`);
+			console.log(`saveData: ${walletData[2].privateKey}`);
+			const [tId, supply] = await tokenCreateFcn(walletData);
 			setTokenId(tId);
 			setTokenSupply(supply);
 			setCreateTextSt(`Successfully created token with ID: ${tId}`);
@@ -64,13 +75,19 @@ function App() {
 	return (
 		<div className="App">
 			<h1 className="header ">Let's build a cool dApp on Hedera!</h1>
+			<MyGroup fcn={connectWallet} buttonLabel={"Connect to a Wallet"} text={"connect here..."} />
+			{/*  */}
 			<MyGroup fcn={tokenCreate} buttonLabel={"Create New Token"} text={createTextSt} />
 			{/*  */}
 			<MyGroup fcn={tokenMint} buttonLabel={"Mint 100 New Tokens"} text={mintTextSt} />
 			{/*  */}
 			<MyGroup fcn={contractDeploy} buttonLabel={"Deploy Contract"} text={contractTextSt} />
 			{/*  */}
-			<MyGroup fcn={contractTokenTransfer} buttonLabel={"Transfer Tokens to Contract"} text={trasnferTextSt} />
+			<MyGroup
+				fcn={contractTokenTransfer}
+				buttonLabel={"Transfer Tokens to Contract"}
+				text={trasnferTextSt}
+			/>
 			{/*  */}
 			<img src={require("./assets/hederaLogo.png")} alt="Hedera" />
 		</div>
