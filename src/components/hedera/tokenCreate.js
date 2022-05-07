@@ -46,7 +46,7 @@ async function tokenCreateFcn(walletData, accountId) {
 	const nano = tokenCreateSubmit.transactionId.validStart.nanos.low;
 	const txId = `${accountId}@${sec}.${nano}`;
 	const tokenCreateRx = await provider.getTransactionReceipt(txId);
-	const tId = tokenCreateRx.tokenId.toString();
+	const tId = tokenCreateRx.tokenId;
 	const supply = tokenCreateTx._initialSupply.low;
 
 	return [tId, supply];
