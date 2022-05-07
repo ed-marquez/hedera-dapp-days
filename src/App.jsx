@@ -9,6 +9,7 @@ import "./styles/App.css";
 
 function App() {
 	const [walletData, setWalletData] = useState();
+	const [accountId, setAccountId] = useState();
 	const [tokenId, setTokenId] = useState();
 	const [tokenSupply, setTokenSupply] = useState();
 	const [contractId, setContractId] = useState();
@@ -20,6 +21,12 @@ function App() {
 
 	async function connectWallet() {
 		const wData = await walletConnectFcn();
+		wData[0].pairingEvent.once((pairingData) => {
+			pairingData.accountIds.forEach((id) => {
+				setAccountId(id);
+				console.log(`\n- Paired account id: ${id}`);
+			});
+		});
 		setWalletData(wData);
 	}
 
@@ -27,11 +34,7 @@ function App() {
 		if (tokenId !== undefined) {
 			setCreateTextSt(`You already have token ${tokenId}`);
 		} else {
-			console.log(`Running token create`);
-			console.log(`${walletData[0]}`);
-			console.log(`account: ${walletData[1]}`);
-			console.log(`saveData: ${walletData[2].privateKey}`);
-			const [tId, supply] = await tokenCreateFcn(walletData);
+			const [tId, supply] = await tokenCreateFcn(walletData, accountId);
 			setTokenId(tId);
 			setTokenSupply(supply);
 			setCreateTextSt(`Successfully created token with ID: ${tId}`);

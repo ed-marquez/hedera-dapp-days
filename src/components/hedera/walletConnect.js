@@ -7,8 +7,6 @@ async function walletConnectFcn() {
 
 	let hashconnect = new HashConnect();
 
-	let accountId = "";
-
 	let saveData = {
 		topic: "",
 		pairingString: "",
@@ -40,18 +38,7 @@ async function walletConnectFcn() {
 	hashconnect.findLocalWallets();
 	hashconnect.connectToLocalWallet(saveData.pairingString);
 
-	hashconnect.pairingEvent.once((pairingData) => {
-		pairingData.accountIds.forEach((id) => {
-			accountId = id;
-			console.log(`\n- Paired account id: ${id}`);
-		});
-	});
-
-	// const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-	// await delay(3000);
-
-	console.log(`Test point${accountId}`);
-	return [hashconnect, accountId, saveData];
+	return [hashconnect, saveData];
 }
 
 export default walletConnectFcn;

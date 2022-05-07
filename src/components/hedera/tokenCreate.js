@@ -14,34 +14,15 @@ import {
 	AccountBalanceQuery,
 	Hbar,
 	ContractInfoQuery,
+	TransactionId,
+	PublicKey,
 } from "@hashgraph/sdk";
 import { HashConnect } from "hashconnect";
 
-async function tokenCreateFcn(walletData) {
-	// const operatorId = AccountId.fromString(operator.id);
-	// const operatorKey = PrivateKey.fromString(operator.pvkey);
-	// const client = Client.forTestnet().setOperator(operatorId, operatorKey);
-
-	// console.log("- Creating token");
-
-	// const tokenCreateTx = new TokenCreateTransaction()
-	// 	.setTokenName("dAppDayToken")
-	// 	.setTokenSymbol("DDT")
-	// 	.setTreasuryAccountId(operatorId)
-	// 	.setInitialSupply(100)
-	// 	.setDecimals(0)
-	// 	.setSupplyKey(operatorKey)
-	// 	.freezeWith(client);
-	// const tokenCreateSign = await tokenCreateTx.sign(operatorKey);
-	// const tokenCreateSubmit = await tokenCreateSign.execute(client);
-	// const tokenCreateRec = await tokenCreateSubmit.getRecord(client);
-	// const tId = tokenCreateRec.receipt.tokenId;
-	// const supply = tokenCreateTx._initialSupply.low;
-	//
+async function tokenCreateFcn(walletData, aId) {
+	const accountId = AccountId.fromString(aId);
 	const hashconnect = walletData[0];
-	// const accountId = walletData[1];
-	const accountId = "0.0.2520793";
-	const saveData = walletData[2];
+	const saveData = walletData[1];
 
 	const provider = hashconnect.getProvider("testnet", saveData.topic, accountId);
 	const signer = hashconnect.getSigner(provider);
@@ -59,8 +40,14 @@ async function tokenCreateFcn(walletData) {
 		// .setSupplyKey(operatorKey)
 		.freezeWithSigner(signer);
 	const tokenCreateSubmit = await tokenCreateTx.executeWithSigner(signer);
-	const tokenCreateRec = await tokenCreateSubmit.getRecord(signer);
-	const tId = tokenCreateRec.receipt.tokenId;
+
+	const sec = tokenCreateSubmit.transactionId.validStart.seconds.low;
+	const nano = tokenCreateSubmit.transactionId.validStart.nanos.low;
+	const txId = `${accountId}@${sec}.${nano}`;
+	console.log(`- Transaction ID: ${txId}`);
+
+	const tokenCreateRx = await provider.getTransactionReceipt(txId);
+	const tId = tokenCreateRx.tokenId.toString();
 	const supply = tokenCreateTx._initialSupply.low;
 
 	return [tId, supply];
