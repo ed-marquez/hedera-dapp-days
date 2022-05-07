@@ -31,7 +31,10 @@ async function contractDeployFcn(tokenId) {
 	// STEP 2 ===================================
 	console.log(`STEP 2 ===================================`);
 	//Create a file on Hedera and store the hex-encoded bytecode
-	const fileCreateTx = new FileCreateTransaction().setKeys([operatorKey]).setContents(bytecode).freezeWith(client);
+	const fileCreateTx = new FileCreateTransaction()
+		.setKeys([operatorKey])
+		.setContents(bytecode)
+		.freezeWith(client);
 	const fileCreateSign = await fileCreateTx.sign(operatorKey);
 	const fileSubmit = await fileCreateSign.execute(client);
 	const fileCreateRx = await fileSubmit.getReceipt(client);
@@ -44,7 +47,9 @@ async function contractDeployFcn(tokenId) {
 	const contractInstantiateTx = new ContractCreateTransaction()
 		.setBytecodeFileId(bytecodeFileId)
 		.setGas(3000000)
-		.setConstructorParameters(new ContractFunctionParameters().addAddress(tokenId.toSolidityAddress()));
+		.setConstructorParameters(
+			new ContractFunctionParameters().addAddress(tokenId.toSolidityAddress())
+		);
 	const contractInstantiateSubmit = await contractInstantiateTx.execute(client);
 	const contractInstantiateRx = await contractInstantiateSubmit.getReceipt(client);
 	const cId = contractInstantiateRx.contractId;

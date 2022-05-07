@@ -48,7 +48,7 @@ function App() {
 		if (tokenId === undefined) {
 			setMintTextSt("Create a token first!");
 		} else {
-			const supply = await tokenMintFcn(tokenId);
+			const supply = await tokenMintFcn(walletData, accountId, tokenId);
 			setTokenSupply(supply);
 			setMintTextSt(`Supply of token ${tokenId} is ${supply}!`);
 		}

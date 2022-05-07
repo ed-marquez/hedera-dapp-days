@@ -16,17 +16,24 @@ import {
 	ContractInfoQuery,
 } from "@hashgraph/sdk";
 
-async function tokenMintFcn(tId) {
-	const operatorId = AccountId.fromString(operator.id);
-	const operatorKey = PrivateKey.fromString(operator.pvkey);
-	const client = Client.forTestnet().setOperator(operatorId, operatorKey);
+async function tokenMintFcn(walletData, accountId, tId) {
+	const hashconnect = walletData[0];
+	const saveData = walletData[1];
+	const provider = hashconnect.getProvider("testnet", saveData.topic, accountId);
+	const signer = hashconnect.getSigner(provider);
 
 	console.log("- Minting new tokens!");
-	const tokenMintTx = new TokenMintTransaction().setTokenId(tId).setAmount(100).freezeWith(client);
-	const tokenMintSign = await tokenMintTx.sign(operatorKey);
-	const tokenMintSubmit = await tokenMintSign.execute(client);
-	const tokenMintRec = await tokenMintSubmit.getRecord(client);
-	const supply = tokenMintRec.receipt.totalSupply;
+	const tokenMintTx = await new TokenMintTransaction()
+		.setTokenId(tId)
+		.setAmount(100)
+		.freezeWithSigner(signer);
+	const tokenMintSubmit = await tokenMintTx.executeWithSigner(signer);
+
+	const sec = tokenMintSubmit.transactionId.validStart.seconds.low;
+	const nano = tokenMintSubmit.transactionId.validStart.nanos.low;
+	const txId = `${accountId}@${sec}.${nano}`;
+	const tokenCreateRx = await provider.getTransactionReceipt(txId);
+	const supply = tokenCreateRx.totalSupply;
 
 	return supply;
 }
