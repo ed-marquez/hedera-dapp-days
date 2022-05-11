@@ -1,13 +1,18 @@
 .App {
 	height: 100vh;
 	background-color: #000000;
-	overflow: scroll;
+	overflow: hidden;
 	text-align: center;
+
+	background-image: url(../assets/colors.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 .container {
 	height: 100%;
-	background-color: #0d1116;
+	background-color: #1366cb;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -21,14 +26,16 @@
 
 .header {
 	margin: 50px;
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 50px;
 	font-weight: bold;
-	color: rgb(209, 12, 235);
+	color: rgb(255, 255, 255);
 }
 
 .sub-text {
 	font-size: 25px;
 	color: white;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 .gradient-text {
@@ -48,9 +55,10 @@
 	cursor: pointer;
 	font-size: 16px;
 	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
 	color: white;
 
-	background: -webkit-linear-gradient(left, #dc5de0, #650cad);
+	background: -webkit-linear-gradient(left, #8259ef, #ff4200);
 	background-size: 100% 100%;
 	animation: gradient-animation 4s ease infinite;
 }
