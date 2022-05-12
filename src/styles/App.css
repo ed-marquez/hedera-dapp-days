@@ -46,21 +46,23 @@
 }
 
 .cta-button {
-	height: 45px;
-	border: 0;
-	width: auto;
-	padding-left: 40px;
-	padding-right: 40px;
-	border-radius: 5px;
-	cursor: pointer;
-	font-size: 16px;
-	font-weight: bold;
-	font-family: Arial, Helvetica, sans-serif;
-	color: white;
-
-	background: -webkit-linear-gradient(left, #8259ef, #ff4200);
-	background-size: 100% 100%;
-	animation: gradient-animation 4s ease infinite;
+  display: inline-block;
+  border: 1px solid white;
+  height: 30px;
+  border-radius: 15px;
+  box-sizing: border-box;
+  padding: 0 20px;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.33px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  font-family: $font-sans;
+  @include transition(background-color 0.1s ease-out);
 }
 
 .opensea-button {
