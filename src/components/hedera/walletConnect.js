@@ -13,7 +13,7 @@ async function walletConnectFcn() {
 	};
 	let appMetadata = {
 		name: "Hedera dApp Days",
-		description: "Let's buidl a dapp on Hedera",
+		description: "Let's buidl a AF PKI SPO dapp on Hedera",
 		icon: "https://raw.githubusercontent.com/ed-marquez/hedera-dapp-days/testing/src/assets/hederaLogo.png",
 	};
 
