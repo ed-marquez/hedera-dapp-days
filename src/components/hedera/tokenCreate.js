@@ -15,8 +15,8 @@ async function tokenCreateFcn(walletData, accountId) {
 	const supplyKey = PublicKey.fromString(mirrorQuery.data.accounts[0].key.key);
 
 	const tokenCreateTx = await new TokenCreateTransaction()
-		.setTokenName("dAppDayToken")
-		.setTokenSymbol("DDT")
+		.setTokenName("SPOBuck")
+		.setTokenSymbol("SPOB")
 		.setTreasuryAccountId(accountId)
 		.setAutoRenewAccountId(accountId)
 		.setAutoRenewPeriod(7776000)
