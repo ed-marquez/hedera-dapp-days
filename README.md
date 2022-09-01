@@ -1,4 +1,4 @@
-# Hedera dApp Days
+# Hedera and AF PKI SPO dApp Days
 
 # Pre-requisites:
 
