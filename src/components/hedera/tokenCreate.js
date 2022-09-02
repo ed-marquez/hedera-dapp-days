@@ -15,12 +15,12 @@ async function tokenCreateFcn(walletData, accountId) {
 	const supplyKey = PublicKey.fromString(mirrorQuery.data.accounts[0].key.key);
 
 	const tokenCreateTx = await new TokenCreateTransaction()
-		.setTokenName("SPOBuck")
-		.setTokenSymbol("SPOB")
+		.setTokenName("SPOBuX")
+		.setTokenSymbol("SPOB-X")
 		.setTreasuryAccountId(accountId)
 		.setAutoRenewAccountId(accountId)
 		.setAutoRenewPeriod(7776000)
-		.setInitialSupply(100)
+		.setInitialSupply(1000)
 		.setDecimals(0)
 		.setSupplyKey(supplyKey)
 		.freezeWithSigner(signer);
