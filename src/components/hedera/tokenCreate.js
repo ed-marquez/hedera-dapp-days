@@ -20,7 +20,7 @@ async function tokenCreateFcn(walletData, accountId) {
 		.setTreasuryAccountId(accountId)
 		.setAutoRenewAccountId(accountId)
 		.setAutoRenewPeriod(7776000)
-		.setInitialSupply(1000)
+		.setInitialSupply(0)
 		.setDecimals(0)
 		.setSupplyKey(supplyKey)
 		.freezeWithSigner(signer);
