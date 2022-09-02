@@ -125,7 +125,7 @@ function App() {
 
 			<MyGroup
 				fcn={tokenMint}
-				buttonLabel={"Mint 100 New Tokens"}
+				buttonLabel={"Mint 1000 New Tokens"}
 				text={mintTextSt}
 				link={mintLinkSt}
 			/>
