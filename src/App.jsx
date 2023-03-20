@@ -8,7 +8,7 @@ import contractExecuteFcn from "./components/hedera/contractExecute.js";
 import "./styles/App.css";
 
 function App() {
-	const [walletData, setWalletData] = useState();
+	const [signer, setSigner] = useState();
 	const [accountId, setAccountId] = useState();
 	const [tokenId, setTokenId] = useState();
 	const [tokenSupply, setTokenSupply] = useState();
@@ -30,16 +30,12 @@ function App() {
 		if (accountId !== undefined) {
 			setConnectTextSt(`🔌 Account ${accountId} already connected ⚡ ✅`);
 		} else {
-			const wData = await walletConnectFcn();
-			wData[0].pairingEvent.once((pairingData) => {
-				pairingData.accountIds.forEach((id) => {
-					setAccountId(id);
-					console.log(`- Paired account id: ${id}`);
-					setConnectTextSt(`🔌 Account ${id} connected ⚡ ✅`);
-					setConnectLinkSt(`https://hashscan.io/#/testnet/account/${id}`);
-				});
-			});
-			setWalletData(wData);
+			const [newSigner, newAcccountId] = await walletConnectFcn();
+			setAccountId(newAcccountId);
+			console.log(`- Paired account id: ${newAcccountId}`);
+			setConnectTextSt(`🔌 Account ${newAcccountId} connected ⚡ ✅`);
+			setConnectLinkSt(`https://hashscan.io/testnet/account/${newAcccountId}`);
+			setSigner(newSigner);
 			setCreateTextSt();
 		}
 	}
@@ -50,7 +46,7 @@ function App() {
 		} else if (accountId === undefined) {
 			setCreateTextSt(`🛑 Connect a wallet first! 🛑`);
 		} else {
-			const [tId, supply, txIdRaw] = await tokenCreateFcn(walletData, accountId);
+			const [tId, supply, txIdRaw] = await tokenCreateFcn(signer, accountId);
 			setTokenId(tId);
 			setTokenSupply(supply);
 			setCreateTextSt(`Successfully created token with ID: ${tId} ✅`);
@@ -58,7 +54,12 @@ function App() {
 			setContractTextSt();
 			setTransferTextSt();
 			const txId = prettify(txIdRaw);
-			setCreateLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setCreateLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
+			//
+			// const txTimestamp = txRec.consensusTimestamp;
+			// const txIdRaw = txRec.transactionId;
+			// const txIdPretty = prettify(txIdRaw.toString());
+			// const mirrorNodeExplorerUrl = `https://hashscan.io/${network}/transaction/${txTimestamp}?tid=${txIdPretty}`;
 		}
 	}
 
@@ -66,7 +67,7 @@ function App() {
 		if (tokenId === undefined) {
 			setMintTextSt("🛑 Create a token first! 🛑");
 		} else {
-			const [supply, txIdRaw] = await tokenMintFcn(walletData, accountId, tokenId);
+			const [supply, txIdRaw] = await tokenMintFcn(signer, accountId, tokenId);
 			setTokenSupply(supply);
 			setMintTextSt(`Supply of token ${tokenId} is ${supply}! ✅`);
 			const txId = prettify(txIdRaw);
@@ -80,12 +81,12 @@ function App() {
 		} else if (contractId !== undefined) {
 			setContractTextSt(`You already have contract ${contractId} ✅`);
 		} else {
-			const [cId, txIdRaw] = await contractDeployFcn(walletData, accountId, tokenId);
+			const [cId, txIdRaw] = await contractDeployFcn(signer, accountId, tokenId);
 			setContractId(cId);
 			setContractTextSt(`Successfully deployed smart contract with ID: ${cId} ✅`);
 			setTransferTextSt();
 			const txId = prettify(txIdRaw);
-			setContractLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setContractLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
 		}
 	}
 
@@ -93,7 +94,7 @@ function App() {
 		if (tokenId === undefined || contractId === undefined) {
 			setTransferTextSt("🛑 Create a token AND deploy a contract first! 🛑");
 		} else {
-			const txIdRaw = await contractExecuteFcn(walletData, accountId, tokenId, contractId);
+			const txIdRaw = await contractExecuteFcn(signer, accountId, tokenId, contractId);
 			setTransferTextSt(`🎉🎉🎉 Great job! You completed the demo 🎉🎉🎉`);
 			const txId = prettify(txIdRaw);
 			setTransferLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
@@ -109,53 +110,20 @@ function App() {
 	return (
 		<div className="App">
 			<h1 className="header">Let's buidl a dapp on Hedera!</h1>
-			<MyGroup
-				fcn={connectWallet}
-				buttonLabel={"Connect Wallet"}
-				text={connectTextSt}
-				link={connectLinkSt}
-			/>
+			<MyGroup fcn={connectWallet} buttonLabel={"Connect Wallet"} text={connectTextSt} link={connectLinkSt} />
 
-			<MyGroup
-				fcn={tokenCreate}
-				buttonLabel={"Create New Token"}
-				text={createTextSt}
-				link={createLinkSt}
-			/>
+			<MyGroup fcn={tokenCreate} buttonLabel={"Create New Token"} text={createTextSt} link={createLinkSt} />
 
-			<MyGroup
-				fcn={tokenMint}
-				buttonLabel={"Mint 100 New Tokens"}
-				text={mintTextSt}
-				link={mintLinkSt}
-			/>
+			<MyGroup fcn={tokenMint} buttonLabel={"Mint 100 New Tokens"} text={mintTextSt} link={mintLinkSt} />
 
-			<MyGroup
-				fcn={contractDeploy}
-				buttonLabel={"Deploy Contract"}
-				text={contractTextSt}
-				link={contractLinkSt}
-			/>
+			<MyGroup fcn={contractDeploy} buttonLabel={"Deploy Contract"} text={contractTextSt} link={contractLinkSt} />
 
-			<MyGroup
-				fcn={contractExecute}
-				buttonLabel={"Transfer Tokens"}
-				text={trasnferTextSt}
-				link={trasnferLinkSt}
-			/>
+			<MyGroup fcn={contractExecute} buttonLabel={"Transfer Tokens"} text={trasnferTextSt} link={trasnferLinkSt} />
 			<div className="logo">
 				<div className="symbol">
-					<svg
-						id="Layer_1"
-						data-name="Layer 1"
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 40 40"
-					>
+					<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
 						<path d="M20 0a20 20 0 1 0 20 20A20 20 0 0 0 20 0" className="circle"></path>
-						<path
-							d="M28.13 28.65h-2.54v-5.4H14.41v5.4h-2.54V11.14h2.54v5.27h11.18v-5.27h2.54zm-13.6-7.42h11.18v-2.79H14.53z"
-							className="h"
-						></path>
+						<path d="M28.13 28.65h-2.54v-5.4H14.41v5.4h-2.54V11.14h2.54v5.27h11.18v-5.27h2.54zm-13.6-7.42h11.18v-2.79H14.53z" className="h"></path>
 					</svg>
 				</div>
 				<span>Hedera</span>

@@ -1,14 +1,9 @@
 import axios from "axios";
 import { TokenCreateTransaction, PublicKey } from "@hashgraph/sdk";
 
-async function tokenCreateFcn(walletData, accountId) {
+async function tokenCreateFcn(signer, accountId) {
 	console.log(`\n=======================================`);
 	console.log(`- Creating HTS token...`);
-
-	const hashconnect = walletData[0];
-	const saveData = walletData[1];
-	const provider = hashconnect.getProvider("testnet", saveData.topic, accountId);
-	const signer = hashconnect.getSigner(provider);
 
 	const url = `https://testnet.mirrornode.hedera.com/api/v1/accounts?account.id=${accountId}`;
 	const mirrorQuery = await axios(url);
@@ -25,12 +20,12 @@ async function tokenCreateFcn(walletData, accountId) {
 		.setSupplyKey(supplyKey)
 		.freezeWithSigner(signer);
 	const tokenCreateSubmit = await tokenCreateTx.executeWithSigner(signer);
-	const tokenCreateRx = await provider.getTransactionReceipt(tokenCreateSubmit.transactionId);
+	const tokenCreateRx = await tokenCreateSubmit.getReceiptWithSigner(signer);
 	const tId = tokenCreateRx.tokenId;
 	const supply = tokenCreateTx._initialSupply.low;
 	console.log(`- Created HTS token with ID: ${tId}`);
 
-	return [tId, supply, tokenCreateSubmit.transactionId];
+	return [tId, supply, tokenCreateSubmit.transactionId.toString()];
 }
 
 export default tokenCreateFcn;
