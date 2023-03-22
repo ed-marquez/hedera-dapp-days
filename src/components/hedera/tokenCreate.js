@@ -21,11 +21,13 @@ async function tokenCreateFcn(signer, accountId) {
 		.freezeWithSigner(signer);
 	const tokenCreateSubmit = await tokenCreateTx.executeWithSigner(signer);
 	const tokenCreateRx = await tokenCreateSubmit.getReceiptWithSigner(signer);
+
 	const tId = tokenCreateRx.tokenId;
 	const supply = tokenCreateTx._initialSupply.low;
+	const txId = tokenCreateSubmit.transactionId.toString();
 	console.log(`- Created HTS token with ID: ${tId}`);
 
-	return [tId, supply, tokenCreateSubmit.transactionId.toString()];
+	return [tId, supply, txId];
 }
 
 export default tokenCreateFcn;

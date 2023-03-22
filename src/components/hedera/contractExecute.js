@@ -1,13 +1,8 @@
 import { ContractFunctionParameters, ContractExecuteTransaction } from "@hashgraph/sdk";
 
-async function contractExecuteFcn(walletData, accountId, tokenId, contractId) {
+async function contractExecuteFcn(signer, tokenId, contractId) {
 	console.log(`\n=======================================`);
 	console.log(`- Executing the smart contract...`);
-
-	const hashconnect = walletData[0];
-	const saveData = walletData[1];
-	const provider = hashconnect.getProvider("testnet", saveData.topic, accountId);
-	const signer = hashconnect.getSigner(provider);
 
 	//Execute a contract function (transfer)
 	const contractExecTx = await new ContractExecuteTransaction()
@@ -17,15 +12,14 @@ async function contractExecuteFcn(walletData, accountId, tokenId, contractId) {
 		.freezeWithSigner(signer);
 	const contractExecSign = await contractExecTx.signWithSigner(signer);
 	const contractExecSubmit = await contractExecSign.executeWithSigner(signer);
-	const contractExecRx = await provider.getTransactionReceipt(contractExecSubmit.transactionId);
+	const contractExecRx = await contractExecSubmit.getReceiptWithSigner(signer);
 	console.log(`- Token transfer from Operator to contract: ${contractExecRx.status.toString()}`);
 
+	const txId = contractExecSubmit.transactionId.toString();
 	const bCheck = await signer.getAccountBalance();
-	console.log(
-		`- Operator balance: ${bCheck.tokens._map.get(tokenId.toString())} units of token ${tokenId}`
-	);
+	console.log(`- Operator balance: ${bCheck.tokens[0].balance} units of token ${tokenId}`);
 
-	return contractExecSubmit.transactionId;
+	return txId;
 }
 
 export default contractExecuteFcn;

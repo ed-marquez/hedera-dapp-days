@@ -1,43 +1,35 @@
 import bytecode from "./bytecode.js";
-import {
-	FileCreateTransaction,
-	ContractCreateTransaction,
-	ContractFunctionParameters,
-} from "@hashgraph/sdk";
+import { ContractCreateFlow, ContractFunctionParameters } from "@hashgraph/sdk";
+// DELETE 👇 WHEN BUG ADDRESSED
+import { Client, AccountId, PrivateKey } from "@hashgraph/sdk";
 
-async function contractDeployFcn(walletData, accountId, tokenId) {
+async function contractDeployFcn(signer, tokenId) {
 	console.log(`\n=======================================`);
 	console.log(`- Deploying smart contract on Hedera...`);
 
-	const hashconnect = walletData[0];
-	const saveData = walletData[1];
-	const provider = hashconnect.getProvider("testnet", saveData.topic, accountId);
-	const signer = hashconnect.getSigner(provider);
-
-	//Create a file on Hedera and store the hex-encoded bytecode
-	const fileCreateTx = await new FileCreateTransaction()
-		.setContents(bytecode)
-		.freezeWithSigner(signer);
-	const fileSubmit = await fileCreateTx.executeWithSigner(signer);
-	const fileCreateRx = await provider.getTransactionReceipt(fileSubmit.transactionId);
-	const bytecodeFileId = fileCreateRx.fileId;
-	console.log(`- The smart contract bytecode file ID is: ${bytecodeFileId}`);
+	const client = Client.forTestnet();
+	client.setOperator(
+		AccountId.fromString("0.0.1218"),
+		PrivateKey.fromStringED25519("302e020100300506032b6570042204202cf397862247a379304bfd716dc4e08926500e5e0fee9d1b8d1fe1deec4c045a")
+	);
 
 	// Create the smart contract
-	const contractCreateTx = await new ContractCreateTransaction()
-		.setBytecodeFileId(bytecodeFileId)
-		.setGas(3000000)
-		.setConstructorParameters(
-			new ContractFunctionParameters().addAddress(tokenId.toSolidityAddress())
-		)
-		.freezeWithSigner(signer);
-	const contractCreateSubmit = await contractCreateTx.executeWithSigner(signer);
-	const contractCreateRx = await provider.getTransactionReceipt(contractCreateSubmit.transactionId);
+	const contractCreateTx = new ContractCreateFlow()
+		.setBytecode(bytecode)
+		.setGas(4000000)
+		.setConstructorParameters(new ContractFunctionParameters().addAddress(tokenId.toSolidityAddress()));
+	// const contractCreateSubmit = await contractCreateTx.executeWithSigner(signer);
+	// const contractCreateRx = await contractCreateSubmit.getReceiptWithSigner(signer);
+	// DELETE 👇 WHEN BUG ADDRESSED
+	const contractCreateSubmit = await contractCreateTx.execute(client);
+	const contractCreateRx = await contractCreateSubmit.getReceipt(client);
+
 	const cId = contractCreateRx.contractId;
+	const txId = contractCreateSubmit.transactionId.toString();
 	const contractAddress = cId.toSolidityAddress();
 	console.log(`- The smart contract ID is: ${cId}`);
 	console.log(`- The smart contract ID in Solidity format is: ${contractAddress} \n`);
 
-	return [cId, contractCreateSubmit.transactionId];
+	return [cId, txId];
 }
 export default contractDeployFcn;

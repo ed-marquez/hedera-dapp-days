@@ -9,7 +9,8 @@ import "./styles/App.css";
 
 function App() {
 	const [signer, setSigner] = useState();
-	const [accountId, setAccountId] = useState();
+	const [account, setAccount] = useState();
+	const [network, setNetwork] = useState();
 	const [tokenId, setTokenId] = useState();
 	const [tokenSupply, setTokenSupply] = useState();
 	const [contractId, setContractId] = useState();
@@ -27,26 +28,27 @@ function App() {
 	const [trasnferLinkSt, setTransferLinkSt] = useState();
 
 	async function connectWallet() {
-		if (accountId !== undefined) {
-			setConnectTextSt(`🔌 Account ${accountId} already connected ⚡ ✅`);
+		if (account !== undefined) {
+			setConnectTextSt(`🔌 Account ${account} already connected ⚡ ✅`);
 		} else {
-			const [newSigner, newAcccountId] = await walletConnectFcn();
-			setAccountId(newAcccountId);
-			console.log(`- Paired account id: ${newAcccountId}`);
-			setConnectTextSt(`🔌 Account ${newAcccountId} connected ⚡ ✅`);
-			setConnectLinkSt(`https://hashscan.io/testnet/account/${newAcccountId}`);
-			setSigner(newSigner);
+			const [newSigner, newAcccount, newNetwork] = await walletConnectFcn();
+			console.log(`- Paired account id: ${newAcccount}`);
+			setConnectTextSt(`🔌 Account ${newAcccount} connected ⚡ ✅`);
+			setConnectLinkSt(`https://hashscan.io/testnet/account/${newAcccount}`);
 			setCreateTextSt();
+			setSigner(newSigner);
+			setAccount(newAcccount);
+			setNetwork(newNetwork);
 		}
 	}
 
 	async function tokenCreate() {
 		if (tokenId !== undefined) {
 			setCreateTextSt(`You already have token ${tokenId} ✅`);
-		} else if (accountId === undefined) {
+		} else if (account === undefined) {
 			setCreateTextSt(`🛑 Connect a wallet first! 🛑`);
 		} else {
-			const [tId, supply, txIdRaw] = await tokenCreateFcn(signer, accountId);
+			const [tId, supply, txIdRaw] = await tokenCreateFcn(signer, account);
 			setTokenId(tId);
 			setTokenSupply(supply);
 			setCreateTextSt(`Successfully created token with ID: ${tId} ✅`);
@@ -54,12 +56,7 @@ function App() {
 			setContractTextSt();
 			setTransferTextSt();
 			const txId = prettify(txIdRaw);
-			setCreateLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
-			//
-			// const txTimestamp = txRec.consensusTimestamp;
-			// const txIdRaw = txRec.transactionId;
-			// const txIdPretty = prettify(txIdRaw.toString());
-			// const mirrorNodeExplorerUrl = `https://hashscan.io/${network}/transaction/${txTimestamp}?tid=${txIdPretty}`;
+			setCreateLinkSt(`https://hashscan.io/${network}/transactionsById/${txId}`);
 		}
 	}
 
@@ -67,11 +64,11 @@ function App() {
 		if (tokenId === undefined) {
 			setMintTextSt("🛑 Create a token first! 🛑");
 		} else {
-			const [supply, txIdRaw] = await tokenMintFcn(signer, accountId, tokenId);
+			const [supply, txIdRaw] = await tokenMintFcn(signer, account, tokenId);
 			setTokenSupply(supply);
 			setMintTextSt(`Supply of token ${tokenId} is ${supply}! ✅`);
 			const txId = prettify(txIdRaw);
-			setMintLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setMintLinkSt(`https://hashscan.io/${network}/transactionsById/${txId}`);
 		}
 	}
 
@@ -81,12 +78,12 @@ function App() {
 		} else if (contractId !== undefined) {
 			setContractTextSt(`You already have contract ${contractId} ✅`);
 		} else {
-			const [cId, txIdRaw] = await contractDeployFcn(signer, accountId, tokenId);
+			const [cId, txIdRaw] = await contractDeployFcn(signer, tokenId);
 			setContractId(cId);
 			setContractTextSt(`Successfully deployed smart contract with ID: ${cId} ✅`);
 			setTransferTextSt();
 			const txId = prettify(txIdRaw);
-			setContractLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
+			setContractLinkSt(`https://hashscan.io/${network}/transactionsById/${txId}`);
 		}
 	}
 
@@ -94,10 +91,10 @@ function App() {
 		if (tokenId === undefined || contractId === undefined) {
 			setTransferTextSt("🛑 Create a token AND deploy a contract first! 🛑");
 		} else {
-			const txIdRaw = await contractExecuteFcn(signer, accountId, tokenId, contractId);
+			const txIdRaw = await contractExecuteFcn(signer, tokenId, contractId);
 			setTransferTextSt(`🎉🎉🎉 Great job! You completed the demo 🎉🎉🎉`);
 			const txId = prettify(txIdRaw);
-			setTransferLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setTransferLinkSt(`https://hashscan.io/${network}/transactionsById/${txId}`);
 		}
 	}
 

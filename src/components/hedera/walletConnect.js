@@ -1,6 +1,9 @@
 import { DAppConnector } from "@hashgraph/hedera-wallet-connect";
 import { LedgerId } from "@hashgraph/sdk";
 
+const ledgerId = LedgerId.TESTNET;
+const network = ledgerId.toString();
+
 async function walletConnectFcn() {
 	console.log(`\n=======================================`);
 	console.log("- Connecting wallet...");
@@ -13,7 +16,7 @@ async function walletConnectFcn() {
 	};
 	let dAppConnector = new DAppConnector(appMetadata);
 
-	dAppConnector.disconnect(LedgerId.TESTNET);
+	dAppConnector.disconnect(ledgerId);
 	// console.log(`${dAppConnector.initialized === true}`);
 
 	console.log(`- init`);
@@ -21,7 +24,7 @@ async function walletConnectFcn() {
 	console.log(`${dAppConnector.initialized === true}`);
 
 	console.log(`- connect`);
-	await dAppConnector.connect(LedgerId.TESTNET);
+	await dAppConnector.connect(ledgerId);
 
 	console.log(`- get signers`);
 	let signers = dAppConnector.getSigners();
@@ -32,7 +35,7 @@ async function walletConnectFcn() {
 		console.log(`Event ${name}: ${JSON.stringify(data)}`);
 	});
 
-	return [signer, accountId];
+	return [signer, accountId, network];
 }
 
 export default walletConnectFcn;
