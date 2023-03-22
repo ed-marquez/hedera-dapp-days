@@ -1,6 +1,6 @@
 import bytecode from "./bytecode.js";
 import { ContractCreateFlow, ContractFunctionParameters } from "@hashgraph/sdk";
-// DELETE 👇 WHEN BUG ADDRESSED
+// (DELETE 👇 WHEN BUG IS ADDRESSED)
 import { Client, AccountId, PrivateKey } from "@hashgraph/sdk";
 
 async function contractDeployFcn(signer, tokenId) {
@@ -18,9 +18,10 @@ async function contractDeployFcn(signer, tokenId) {
 		.setBytecode(bytecode)
 		.setGas(4000000)
 		.setConstructorParameters(new ContractFunctionParameters().addAddress(tokenId.toSolidityAddress()));
+	// TO WORK AROUND BUG, COMMENT THE TWO LINES BELOW (DELETE 👇 WHEN BUG IS ADDRESSED)
 	// const contractCreateSubmit = await contractCreateTx.executeWithSigner(signer);
 	// const contractCreateRx = await contractCreateSubmit.getReceiptWithSigner(signer);
-	// DELETE 👇 WHEN BUG ADDRESSED
+	// TO WORK AROUND BUG, UNCOMMENT THE TWO LINES BELOW (DELETE 👇 WHEN BUG IS ADDRESSED)
 	const contractCreateSubmit = await contractCreateTx.execute(client);
 	const contractCreateRx = await contractCreateSubmit.getReceipt(client);
 
