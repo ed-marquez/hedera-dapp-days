@@ -36,7 +36,7 @@ function App() {
 					setAccountId(id);
 					console.log(`- Paired account id: ${id}`);
 					setConnectTextSt(`🔌 Account ${id} connected ⚡ ✅`);
-					setConnectLinkSt(`https://hashscan.io/#/testnet/account/${id}`);
+					setConnectLinkSt(`https://hashscan.io/testnet/account/${id}`);
 				});
 			});
 			setWalletData(wData);
@@ -58,7 +58,7 @@ function App() {
 			setContractTextSt();
 			setTransferTextSt();
 			const txId = prettify(txIdRaw);
-			setCreateLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setCreateLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
 		}
 	}
 
@@ -70,7 +70,7 @@ function App() {
 			setTokenSupply(supply);
 			setMintTextSt(`Supply of token ${tokenId} is ${supply}! ✅`);
 			const txId = prettify(txIdRaw);
-			setMintLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setMintLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
 		}
 	}
 
@@ -85,7 +85,7 @@ function App() {
 			setContractTextSt(`Successfully deployed smart contract with ID: ${cId} ✅`);
 			setTransferTextSt();
 			const txId = prettify(txIdRaw);
-			setContractLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setContractLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
 		}
 	}
 
@@ -96,7 +96,7 @@ function App() {
 			const txIdRaw = await contractExecuteFcn(walletData, accountId, tokenId, contractId);
 			setTransferTextSt(`🎉🎉🎉 Great job! You completed the demo 🎉🎉🎉`);
 			const txId = prettify(txIdRaw);
-			setTransferLinkSt(`https://hashscan.io/#/testnet/transaction/${txId}`);
+			setTransferLinkSt(`https://hashscan.io/testnet/transaction/${txId}`);
 		}
 	}
 
