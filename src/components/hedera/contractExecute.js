@@ -1,31 +1,27 @@
-import { ContractFunctionParameters, ContractExecuteTransaction } from "@hashgraph/sdk";
+import { Hbar, TransferTransaction } from "@hashgraph/sdk";
 
 async function contractExecuteFcn(walletData, accountId, tokenId, contractId) {
 	console.log(`\n=======================================`);
-	console.log(`- Executing the smart contract...`);
+	console.log(`- Executing HBAR transfer to the smart contract...`);
 
 	const hashconnect = walletData[0];
 	const saveData = walletData[1];
 	const provider = hashconnect.getProvider("testnet", saveData.topic, accountId);
 	const signer = hashconnect.getSigner(provider);
 
-	//Execute a contract function (transfer)
-	const contractExecTx = await new ContractExecuteTransaction()
-		.setContractId(contractId)
-		.setGas(3000000)
-		.setFunction("tokenAssoTrans", new ContractFunctionParameters().addInt64(50))
-		.freezeWithSigner(signer);
-	const contractExecSign = await contractExecTx.signWithSigner(signer);
-	const contractExecSubmit = await contractExecSign.executeWithSigner(signer);
-	const contractExecRx = await provider.getTransactionReceipt(contractExecSubmit.transactionId);
-	console.log(`- Token transfer from Operator to contract: ${contractExecRx.status.toString()}`);
+	// Execute a transfer of HBAR from the operator account to the contract
+	const transferTx = await new TransferTransaction().addHbarTransfer(accountId, new Hbar(-1)).addHbarTransfer(contractId, new Hbar(1)).freezeWithSigner(signer)
+	const transferTxSign = await transferTx.signWithSigner(signer);
+	const transferTxSubmit = await transferTxSign.executeWithSigner(signer);
+	const transferTxRx = await provider.getTransactionReceipt(transferTxSubmit.transactionId);
+	console.log(`- HBAR transfer from Operator to contract: ${transferTxRx.status.toString()}`);
 
 	const bCheck = await signer.getAccountBalance();
 	console.log(
 		`- Operator balance: ${bCheck.tokens._map.get(tokenId.toString())} units of token ${tokenId}`
 	);
 
-	return contractExecSubmit.transactionId;
+	return transferTxSubmit.transactionId;
 }
 
 export default contractExecuteFcn;
